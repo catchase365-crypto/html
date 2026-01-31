@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <title>HTML Editor AI v5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- 核心 CSS 变量系统 --- */
+        :root {
+            --bg-main: #161122;
+            --bg-ui: #1e192c;
+            --border: #352e46;
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --accent: #a78bfa;
+            --caret: #ffffff;
+            --line-num-bg: #161122;
+            --editor-font: 'Menlo', 'Monaco', 'Courier New', monospace;
+            --editor-size: 15px;      
+            --editor-line-height: 24px; 
+            --editor-padding: 12px;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .editor-container {
+            position: relative;
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-main);
+        }
+
+        .line-numbers {
+            width: 48px;
+            flex-shrink: 0;
+            background-color: var(--line-num-bg);
+            color: #22c55e;
+            text-align: right;
+            padding: var(--editor-padding) 6px var(--editor-padding) 0;
+            font-family: var(--editor-font);
+            font-size: var(--editor-size);
+            line-height: var(--editor-line-height);
+            border-right: 1px solid var(--border);
+            user-select: none;
+            overflow: hidden;
+            white-space: pre; 
+        }
+
+        .hidden { display: none !important; }
+
+        textarea#codeArea {
+            flex-grow: 1;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: none;
+            margin: 0;
+            padding: var(--editor-padding);
+            font-family: var(--editor-font);
+            font-size: var(--editor-size);
+            line-height: var(--editor-line-height);
+            outline: none;
+            resize: none;
+            white-space: pre; 
+            overflow: auto;
+            caret-color: var(--caret);
+            tab-size: 2;
+        }
+
+        .ui-panel {
+            background-color: var(--bg-ui);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .icon-btn:active { transform: scale(0.96); opacity: 0.8; }
+        
+        .font-btn {
+            padding: 4px 10px;
+            font-size: 13px;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+        .font-btn:hover { filter: brightness(1.2); }
+
+        .quick-bar {
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .quick-bar::-webkit-scrollbar { display: none; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 3px; opacity: 0.3; }
+
+        ::selection { background-color: var(--accent); color: white; }
+
+        /* --- AI 面板特定样式 --- */
+        .ai-loading {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh]">
+
+    <header class="ui-panel p-2 flex items-center justify-between shrink-0 z-30 shadow-sm relative">
+        <div class="flex items-center gap-2">
+            <button onclick="toggleAiPanel()" class="icon-btn border-purple-500/50 text-purple-400 bg-purple-900/20" title="AI Assistant">
+                🤖 <span class="hidden sm:inline ml-1 text-xs font-bold">AI Edit</span>
+            </button>
+            <div class="w-[1px] h-6 bg-[var(--border)] mx-1"></div>
+            <label class="icon-btn" title="Open File">
+                📂 <span class="hidden sm:inline ml-1 text-xs opacity-70">Open</span>
+                <input type="file" id="fileInput" accept=".html,.htm,.txt" class="hidden">
+            </label>
+            <button onclick="toggleThemePanel()" class="icon-btn" title="设置">
+                🎨
+            </button>
+            <div class="flex gap-1 ml-1 border-l border-[var(--border)] pl-2">
+                <button onclick="editorUndo()" class="icon-btn w-8 px-0" title="撤销">↩</button>
+                <button onclick="editorRedo()" class="icon-btn w-8 px-0" title="重做">↪</button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="runCode()" class="icon-btn border-green-900/50 text-green-400 bg-green-900/10">
+                ▶
+            </button>
+            <button onclick="downloadCode()" class="icon-btn border-blue-900/50 text-blue-400 bg-blue-900/10">
+                ⬇
+            </button>
+        </div>
+    </header>
+
+    <div id="aiPanel" class="hidden absolute top-14 left-2 z-50 bg-[var(--bg-ui)] border border-[var(--border)] p-3 rounded-xl shadow-2xl w-[90%] max-w-[400px] flex flex-col gap-3">
+        <div class="flex justify-between items-center pb-2 border-b border-[var(--border)]">
+            <span id="aiPanelTitle" class="text-sm font-bold text-purple-400">Gemini AI</span>
+            <button onclick="toggleAiPanel()" class="text-[var(--text-dim)] hover:text-[var(--text-main)]">✕</button>
+        </div>
+        
+        <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-[var(--text-dim)] uppercase">API Key</label>
+            <input type="password" id="apiKeyInput" placeholder="Paste Key..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-[var(--text-dim)] uppercase">Model</label>
+            <select id="aiModelSelect" onchange="saveAiModel()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
+                <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+                <option value="gemini-3-pro-preview">gemini-3-pro-preview</option>
+            </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-[var(--text-dim)] uppercase">Prompt</label>
+            <textarea id="aiPromptInput" rows="3" placeholder="Example: Make buttons rounded and blue..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-sm p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none resize-none"></textarea>
+        </div>
+
+        <button onclick="callGemini()" id="aiSendBtn" class="bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 rounded font-medium transition-colors flex justify-center items-center gap-2">
+            <span>🚀</span>
+        </button>
+        <div id="aiStatus" class="text-xs text-[var(--text-dim)] min-h-[1.2em]"></div>
+    </div>
+
+    <div id="themePanel" class="hidden absolute top-14 left-16 z-40 bg-[var(--bg-ui)] border border-[var(--border)] p-2 rounded-xl shadow-2xl w-48 max-h-[60vh] overflow-y-auto">
+        <button onclick="toggleLineNumbers()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
+            <span>🔢</span> <span id="lineNumToggleText">Line [ON]</span>
+        </button>
+        <button onclick="toggleQuickBar()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
+            <span>&lt;/&gt;</span> <span id="quickBarToggleText">Quick [OFF]</span>
+        </button>
+        <div class="w-full h-[1px] bg-[var(--border)] mb-2"></div>
+        <div id="themeList" class="flex flex-col gap-1"></div>
+    </div>
+
+    <div class="ui-panel p-1.5 flex flex-nowrap items-center gap-2 shrink-0 z-20">
+        <div class="flex items-center flex-grow bg-[var(--bg-main)] rounded border border-[var(--border)] px-2 py-1 min-w-0">
+            <input type="text" id="searchInput" placeholder="Search..." class="bg-transparent border-none text-sm text-[var(--text-main)] focus:outline-none w-full min-w-[20px]">
+            <span id="searchCount" class="text-xs text-[var(--text-dim)] whitespace-nowrap px-1"></span>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+            <button onclick="navigateSearch(-1)" class="icon-btn w-8 h-8 px-0">⬆</button>
+            <button onclick="navigateSearch(1)" class="icon-btn w-8 h-8 px-0">⬇</button>
+        </div>
+        <div class="w-[1px] h-6 bg-[var(--border)] mx-1 shrink-0"></div>
+        <div class="flex items-center rounded overflow-hidden border border-[var(--border)] shrink-0">
+            <button onclick="changeFontSize(-1)" class="font-btn border-r border-[var(--border)]">A-</button>
+            <button onclick="changeFontSize(1)" class="font-btn">A+</button>
+        </div>
+    </div>
+
+    <div id="quickBar" class="ui-panel p-1 shrink-0 quick-bar whitespace-nowrap flex items-center gap-2 px-2 h-10 border-none hidden">
+        <span class="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mr-1">Quick:</span>
+        <button onclick="insertText('<div class=\x22\x22></div>', 12)" class="icon-btn text-xs py-1">&lt;div&gt;</button>
+        <button onclick="insertText('<p></p>', 4)" class="icon-btn text-xs py-1">&lt;p&gt;</button>
+        <button onclick="insertText('<a href=\x22\x22></a>', 9)" class="icon-btn text-xs py-1">&lt;a&gt;</button>
+        <button onclick="insertText('img src=\x22\x22', 9)" class="icon-btn text-xs py-1">img</button>
+        <span class="w-[1px] h-4 bg-[var(--border)] mx-1"></span>
+        <button onclick="insertText('=')" class="icon-btn text-xs w-6 px-0">=</button>
+        <button onclick="insertText('\x22')" class="icon-btn text-xs w-6 px-0">"</button>
+        <button onclick="insertText('/')" class="icon-btn text-xs w-6 px-0">/</button>
+        <button onclick="insertText('&gt;')" class="icon-btn text-xs w-6 px-0">&gt;</button>
+        <button onclick="insertText(';')" class="icon-btn text-xs w-6 px-0">;</button>
+        <button onclick="insertText('  ')" class="icon-btn text-xs px-2">Tab</button>
+    </div>
+
+    <main class="editor-container">
+        <div id="lineNumbers" class="line-numbers">1</div>
+        <textarea id="codeArea" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="Type HTML here..."></textarea>
+    </main>
+
+    <script>
+        // --- 1. 配置与初始化 ---
+        const themes = [
+            { name: "Deep Purple", bg: "#161122", ui: "#1e192c", text: "#e2e8f0", accent: "#a78bfa" },
+            { name: "OLED Black", bg: "#000000", ui: "#111111", text: "#e0e0e0", accent: "#ffffff" },
+            { name: "Hacker Green", bg: "#0d1117", ui: "#161b22", text: "#4ade80", accent: "#22c55e" },
+            { name: "Light Mode", bg: "#ffffff", ui: "#f3f4f6", text: "#24292f", accent: "#0969da", border: "#e5e7eb", dim: "#6e7781" },
+            { name: "Cyberpunk", bg: "#0b001a", ui: "#240046", text: "#ff00ff", accent: "#00ffff" },
+        ];
+
+        const codeArea = document.getElementById('codeArea');
+        const lineNumbers = document.getElementById('lineNumbers');
+        const themePanel = document.getElementById('themePanel');
+        const themeList = document.getElementById('themeList');
+        const searchInput = document.getElementById('searchInput');
+        const quickBar = document.getElementById('quickBar');
+        
+        // AI 相关 DOM
+        const aiPanel = document.getElementById('aiPanel');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const aiPromptInput = document.getElementById('aiPromptInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const aiStatus = document.getElementById('aiStatus');
+        const aiModelSelect = document.getElementById('aiModelSelect');
+
+        let currentFileName = "index";
+        let historyStack = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 100;
+        let debounceTimer;
+
+        window.onload = function() {
+            initThemes(); 
+            const saved = localStorage.getItem('html_editor_ult_content');
+            if (saved) { codeArea.value = saved; saveHistory(); } else { saveHistory(); }
+            
+            const savedThemeIdx = localStorage.getItem('html_editor_theme_idx');
+            applyTheme(savedThemeIdx ? parseInt(savedThemeIdx) : 0);
+            
+            const savedSize = localStorage.getItem('html_editor_font_size');
+            if (savedSize) applyFontSize(parseInt(savedSize));
+
+            // 恢复 Key
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if(savedKey) apiKeyInput.value = savedKey;
+            // 恢复 AI 模型
+            const savedModel = localStorage.getItem('gemini_selected_model');
+            if(savedModel) aiModelSelect.value = savedModel;
+
+            // 恢复 UI 状态
+            if (localStorage.getItem('html_editor_linenum_visible') === 'false') toggleLineNumbers();
+            if (localStorage.getItem('html_editor_quickbar_visible') === 'true') toggleQuickBar();
+            
+            updateLineNumbers();
+        };
+
+        // --- 2. AI 核心逻辑 (Gemini 2.5) ---
+        function toggleAiPanel() {
+            aiPanel.classList.toggle('hidden');
+            if (!aiPanel.classList.contains('hidden')) aiPromptInput.focus();
+        }
+
+        function saveAiModel() {
+            localStorage.setItem('gemini_selected_model', aiModelSelect.value);
+        }
+
+        async function callGemini() {
+            const key = apiKeyInput.value.trim();
+            const prompt = aiPromptInput.value.trim();
+            const code = codeArea.value;
+            const model = aiModelSelect.value;
+
+            if (!key) { alert("Input API Key first"); return; }
+            if (!prompt) { alert("Input prompt first"); return; }
+
+            localStorage.setItem('gemini_api_key', key);
+            
+            // UI Loading 状态
+            aiSendBtn.disabled = true;
+            aiSendBtn.innerHTML = `<span class="ai-loading">...</span>`;
+            aiStatus.textContent = `AI: Thinking (${model})...`;
+            aiStatus.className = "text-xs text-purple-400 animate-pulse";
+
+            // 构造 Prompt：要求 JSON Diff 格式
+            const systemInstruction = `You are an expert HTML coder. 
+            TASK: The user wants to modify the provided HTML code. 
+            CONSTRAINT 1: Do NOT return the full code. 
+            CONSTRAINT 2: Return a JSON ARRAY of changes. 
+            FORMAT: [{"find": "EXACT UNIQUE CODE BLOCK FROM ORIGINAL TO REPLACE", "replace": "NEW CODE BLOCK"}].
+            IMPORTANT: The 'find' string must be unique enough to locate the specific part. Include surrounding context if needed.
+            If multiple changes are needed, add multiple objects to the array.
+            Return ONLY the JSON array inside a markdown block like \`\`\`json ... \`\`\`.`;
+
+            const userMessage = `My Code:\n\n${code}\n\nModification Request:\n${prompt}`;
+
+            try {
+                // 调用 Gemini API
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: systemInstruction + "\n\n" + userMessage }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error.message);
+                
+                const rawText = data.candidates[0].content.parts[0].text;
+                
+                // 解析 JSON
+                const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/) || rawText.match(/```\s*([\s\S]*?)\s*```/);
+                let changes = [];
+                if (jsonMatch) {
+                    changes = JSON.parse(jsonMatch[1]);
+                } else {
+                    // 尝试直接解析
+                    changes = JSON.parse(rawText);
+                }
+
+                if (!Array.isArray(changes)) throw new Error("AI 返回格式错误");
+
+                // 应用修改
+                let newCode = codeArea.value;
+                let successCount = 0;
+                
+                changes.forEach(change => {
+                    if (newCode.includes(change.find)) {
+                        newCode = newCode.replace(change.find, change.replace);
+                        successCount++;
+                    } else {
+                        console.warn("未找到代码块:", change.find);
+                    }
+                });
+
+                if (successCount > 0) {
+                    codeArea.value = newCode;
+                    saveHistory(); 
+                    updateLineNumbers();
+                    localStorage.setItem('html_editor_ult_content', newCode);
+                    aiStatus.textContent = `Done: ${successCount} changes! ✅`;
+                    aiStatus.className = "text-xs text-green-400";
+                    aiPromptInput.value = ''; 
+                } else {
+                    aiStatus.textContent = "No changes matched. Be more specific. ❌";
+                    aiStatus.className = "text-xs text-red-400";
+                }
+
+            } catch (err) {
+                console.error(err);
+                aiStatus.textContent = "错误: " + err.message;
+                aiStatus.className = "text-xs text-red-400";
+            } finally {
+                aiSendBtn.disabled = false;
+                aiSendBtn.innerHTML = `<span>🚀 发送给 AI</span>`;
+            }
+        }
+
+        // --- 3. 基础编辑器功能 (保留原有逻辑) ---
+        function toggleLineNumbers() {
+            lineNumbers.classList.toggle('hidden');
+            const hidden = lineNumbers.classList.contains('hidden');
+            document.getElementById('lineNumToggleText').textContent = hidden ? "Line [OFF]" : "Line [ON]";
+            localStorage.setItem('html_editor_linenum_visible', !hidden);
+            updateLineNumbers();
+        }
+
+        function toggleQuickBar() {
+            quickBar.classList.toggle('hidden');
+            const hidden = quickBar.classList.contains('hidden');
+            document.getElementById('quickBarToggleText').textContent = hidden ? "Quick [OFF]" : "Quick [ON]";
+            localStorage.setItem('html_editor_quickbar_visible', !hidden);
+            setTimeout(updateLineNumbers, 0);
+        }
+
+        function changeFontSize(delta) {
+            const root = document.documentElement;
+            let newSize = parseInt(getComputedStyle(root).getPropertyValue('--editor-size')) + delta;
+            if (newSize < 10) newSize = 10;
+            if (newSize > 32) newSize = 32;
+            applyFontSize(newSize);
+        }
+
+        function applyFontSize(size) {
+            const root = document.documentElement;
+            root.style.setProperty('--editor-size', size + 'px');
+            root.style.setProperty('--editor-line-height', Math.round(size * 1.6) + 'px');
+            localStorage.setItem('html_editor_font_size', size);
+            setTimeout(updateLineNumbers, 0);
+        }
+
+        const updateLineNumbers = () => {
+            if (lineNumbers.classList.contains('hidden')) return;
+            const lines = codeArea.value.split('\n').length;
+            const minLines = Math.floor(window.innerHeight / 24); 
+            lineNumbers.textContent = Array.from({length: Math.max(lines, minLines)}, (_, i) => i + 1).join('\n');
+        };
+
+        codeArea.addEventListener('scroll', () => {
+            if (!lineNumbers.classList.contains('hidden')) lineNumbers.scrollTop = codeArea.scrollTop;
+        });
+
+        function initThemes() {
+            themeList.innerHTML = '';
+            themes.forEach((t, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center justify-between';
+                btn.style.backgroundColor = t.bg;
+                btn.style.color = t.text;
+                btn.style.border = `1px solid ${t.border || '#374151'}`;
+                btn.innerHTML = `<span>${t.name}</span><div class="w-3 h-3 rounded-full" style="background:${t.accent}"></div>`;
+                btn.onclick = () => { applyTheme(idx); themePanel.classList.add('hidden'); };
+                themeList.appendChild(btn);
+            });
+        }
+
+        function applyTheme(idx) {
+            const t = themes[idx];
+            const root = document.documentElement;
+            Object.keys(t).forEach(k => {
+                if(k !== 'name') root.style.setProperty(k === 'dim' ? '--text-dim' : (k === 'border' ? '--border' : `--${k === 'ui' ? 'bg-ui' : (k === 'text' ? 'text-main' : (k === 'bg' ? 'bg-main' : k))}`), t[k]);
+            });
+            root.style.setProperty('--line-num-bg', t.bg);
+            localStorage.setItem('html_editor_theme_idx', idx);
+        }
+
+        function toggleThemePanel() { themePanel.classList.toggle('hidden'); }
+
+        function saveHistory() {
+            const val = codeArea.value;
+            if (historyIndex > -1 && historyStack[historyIndex] === val) return;
+            historyStack = historyStack.slice(0, historyIndex + 1);
+            historyStack.push(val);
+            if (historyStack.length > MAX_HISTORY) historyStack.shift(); else historyIndex++;
+        }
+
+        codeArea.addEventListener('input', () => {
+            updateLineNumbers();
+            localStorage.setItem('html_editor_ult_content', codeArea.value);
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(saveHistory, 500);
+        });
+
+        function editorUndo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                codeArea.value = historyStack[historyIndex];
+                updateLineNumbers();
+                localStorage.setItem('html_editor_ult_content', codeArea.value);
+            }
+        }
+
+        function editorRedo() {
+            if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                codeArea.value = historyStack[historyIndex];
+                updateLineNumbers();
+                localStorage.setItem('html_editor_ult_content', codeArea.value);
+            }
+        }
+
+        // 搜索功能
+        let searchMatches = [], currentMatchIdx = -1;
+        searchInput.addEventListener('input', function() { performSearch(this.value, false); });
+        searchInput.addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); navigateSearch(1); }});
+
+        function performSearch(term, jump) {
+            searchMatches = [];
+            if(!jump) currentMatchIdx = -1;
+            const countSpan = document.getElementById('searchCount');
+            if(!term) { countSpan.textContent = ''; return; }
+            const val = codeArea.value.toLowerCase();
+            let pos = val.indexOf(term.toLowerCase());
+            while(pos !== -1) { searchMatches.push(pos); pos = val.indexOf(term.toLowerCase(), pos + 1); }
+            countSpan.textContent = searchMatches.length > 0 ? `?/${searchMatches.length}` : '0/0';
+            countSpan.style.color = searchMatches.length > 0 ? 'var(--accent)' : 'red';
+            if(jump && searchMatches.length > 0) navigateSearch(1);
+        }
+
+        function navigateSearch(dir) {
+            if(searchMatches.length === 0) return;
+            currentMatchIdx = (currentMatchIdx + dir + searchMatches.length) % searchMatches.length;
+            const idx = searchMatches[currentMatchIdx];
+            codeArea.focus();
+            codeArea.setSelectionRange(idx, idx + searchInput.value.length);
+            const lh = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--editor-line-height'));
+            codeArea.scrollTop = (codeArea.value.substr(0, idx).split('\n').length * lh) - (codeArea.clientHeight / 2);
+            document.getElementById('searchCount').textContent = `${currentMatchIdx + 1}/${searchMatches.length}`;
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                codeArea.value = e.target.result;
+                updateLineNumbers();
+                saveHistory();
+            };
+            reader.readAsText(file);
+        });
+
+        function insertText(text, offset=0) {
+            const start = codeArea.selectionStart, end = codeArea.selectionEnd;
+            codeArea.value = codeArea.value.substring(0, start) + text + codeArea.value.substring(end);
+            codeArea.setSelectionRange(start + text.length - offset, start + text.length - offset);
+            codeArea.focus();
+            updateLineNumbers();
+            saveHistory();
+        }
+
+        function runCode() {
+            const w = window.open("", "_blank");
+            if(w) { w.document.write(codeArea.value); w.document.close(); } else alert("Allow Popups!");
+        }
+
+        function downloadCode() {
+            const blob = new Blob([codeArea.value], {type:'text/html'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `index_${Date.now()}.html`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
