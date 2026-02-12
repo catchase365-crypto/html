@@ -364,7 +364,7 @@
         </div>
 
         <div class="flex items-center gap-1">
-            <button onclick="runCode()" class="icon-btn w-9 h-9 px-0 border-green-900/50 text-green-400 bg-green-900/10" title="Run">
+            <button onclick="handleClick(event)" onmousedown="startPress()" ontouchstart="startPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()" ontouchend="cancelPress()" oncontextmenu="return false;" class="icon-btn w-9 h-9 px-0 border-green-900/50 text-green-400 bg-green-900/10" title="Run (Hold for Live Preview)">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" class="w-[2.1rem] h-[2.1rem]">
   <defs>
     <linearGradient id="metal-grad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -460,6 +460,8 @@
   <path d="M25 87 L75 87" stroke="rgba(255,255,255,0.37)" stroke-width="1" stroke-dasharray="2,2" fill="none"></path>
   <path d="M20 65 Q20 60 25 60 L75 60 Q80 60 80 65 L35 85 Z" fill="url(#shine)"></path>
 </svg>
+            </button>
+            
             </button>
         </div>
     </header>
@@ -753,7 +755,7 @@
         let historyStack = [];
         let historyIndex = -1;
         const MAX_HISTORY = 100;
-        let debounceTimer;
+        let debounceTimer, previewWindow = null;
 
         window.onload = function() {
             initThemes(); 
@@ -1147,6 +1149,7 @@
             localStorage.setItem('html_editor_ult_content', codeArea.value);
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(saveHistory, 500);
+            updatePreview();
         });
 
         function editorUndo() {
@@ -1225,6 +1228,31 @@
             saveHistory();
         }
 
+        let pressTimer;
+        let ignoreClick = false;
+
+        function startPress() {
+            ignoreClick = false;
+            pressTimer = setTimeout(() => {
+                ignoreClick = true;
+                toggleLivePreview();
+                if(navigator.vibrate) navigator.vibrate(50);
+            }, 600);
+        }
+
+        function cancelPress() {
+            clearTimeout(pressTimer);
+        }
+
+        function handleClick(e) {
+            if (ignoreClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            runCode();
+        }
+
         function runCode() {
             const w = window.open("", "_blank");
             if(w) { w.document.write(codeArea.value); w.document.close(); } else alert("Allow Popups!");
@@ -1236,6 +1264,23 @@
             a.href = URL.createObjectURL(blob);
             a.download = `index_${Date.now()}.html`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function toggleLivePreview() {
+            if (!previewWindow || previewWindow.closed) {
+                previewWindow = window.open("", "EditorLivePreview");
+            }
+            updatePreview();
+            previewWindow.focus();
+        }
+
+        function updatePreview() {
+            if (previewWindow && !previewWindow.closed) {
+                const doc = previewWindow.document;
+                doc.open();
+                doc.write(codeArea.value);
+                doc.close();
+            }
         }
     </script>
 </body>
