@@ -505,10 +505,9 @@
         <div class="flex flex-col gap-1">
             <label class="text-[10px] text-[var(--text-dim)] uppercase">Model</label>
             <select id="aiModelSelect" onchange="saveAiModel()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
-                <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
-                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview</option>
                 <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
-                <option value="gemini-3-pro-preview">gemini-3-pro-preview</option>
+                <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
             </select>
         </div>
 
@@ -789,7 +788,11 @@
             if(savedKey) apiKeyInput.value = savedKey;
             // 恢复 AI 模型
             const savedModel = localStorage.getItem('gemini_selected_model');
-            if(savedModel) aiModelSelect.value = savedModel;
+            if (savedModel && Array.from(aiModelSelect.options).some(o => o.value === savedModel)) {
+                aiModelSelect.value = savedModel;
+            } else {
+                aiModelSelect.value = "gemini-3-flash-preview";
+            }
 
             // 恢复 UI 状态
             if (localStorage.getItem('html_editor_linenum_visible') === 'false') toggleLineNumbers();
