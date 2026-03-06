@@ -724,14 +724,14 @@
             <select id="repoSelect" onchange="updateRepoLink()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] max-w-[100px] outline-none">
                 <option value="">Repos...</option>
             </select>
-            <button onclick="if(confirm(currentLang==='cn'?'确定刷新仓库列表吗？':'Refresh repo list?')) ghListRepos()" class="icon-btn p-1 text-xs" title="Refresh Repo List">📡</button>
-            <button onclick="if(confirm(currentLang==='cn'?'确定从仓库拉取index.html吗？此操作会覆盖当前编辑器内容。':'Pull index.html from repo? This will overwrite current code.')) ghDownloadIndex()" class="icon-btn p-1 text-xs" title="Load Repo index.html to Editor">🔘</button>
-            <button onclick="if(confirm(currentLang==='cn'?'确定同步当前代码到GitHub吗？':'Sync current code to GitHub?')) ghUpdateRepo()" class="icon-btn p-1 text-xs" title="Overwrite Repo index.html with Current Code">🔄</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定刷新仓库列表吗？':'Refresh repo list?')) ghListRepos()" class="icon-btn p-1 text-xs" title="Refresh Repo List">🔄</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定从仓库拉取index.html吗？此操作会覆盖当前编辑器内容。':'Pull index.html from repo? This will overwrite current code.')) ghDownloadIndex()" class="icon-btn p-1 text-xs" title="Load Repo index.html to Editor">⤵️</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定同步当前代码到GitHub吗？':'Sync current code to GitHub?')) ghUpdateRepo()" class="icon-btn p-1 text-xs" title="Overwrite Repo index.html with Current Code">⤴️</button>
             <button onclick="ghOpenPages()" class="icon-btn p-1 text-xs" title="Open GitHub Pages">🌐</button>
             <button id="ghRepoLinkBtn" onclick="ghOpenRepo()" class="icon-btn p-1 text-xs" title="Open Repo">📂</button>
-            <button onclick="ghDownloadToPC()" class="icon-btn p-1 text-xs" title="Download Repo index.html to PC">📥</button>
+            <button onclick="ghDownloadToPC()" class="icon-btn p-1 text-xs" title="Download Repo index.html to PC">💾</button>
             <button onclick="if(confirm(currentLang==='cn'?'确定重命名此仓库吗？':'Rename this repository?')) ghRenameRepo()" class="icon-btn p-1 text-xs" title="Rename Repo">✏️</button>
-            <button onclick="if(confirm(currentLang==='cn'?'危险操作：确定永久删除此仓库吗？':'DANGER: Permanently delete this repository?')) ghDeleteRepo()" class="icon-btn p-1 text-xs text-red-400" title="Delete Repo">🗑️</button>
+            <button onclick="if(confirm(currentLang==='cn'?'危险操作：确定永久删除此仓库吗？':'DANGER: Permanently delete this repository?')) ghDeleteRepo()" class="icon-btn p-1 text-xs text-red-400" title="Delete Repo">​🚮</button>
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
         <div class="flex items-center gap-1 flex-grow min-w-0">
@@ -1374,8 +1374,8 @@
         // --- GitHub Helper Logic ---
         function showGhHelp() {
             const help = currentLang === 'cn' ? 
-                '📡刷新: 获取仓库列表\n🔘拉取: 加载线上文件到编辑器代码区\n🔄同步: 将当前代码区代码覆盖到仓库index.html\n🌐网页: 打开在线预览html页面\n📂仓库: 前往GitHub该仓库管理页面\n📥下载: 下载所选仓库的index.html文件到本地\n✏️重命名: 修改该仓库名称\n🗑️删除: 永久移除该仓库' : 
-                '📡Refresh: Fetch repo list\n🔘Pull: Load online file to editor\n🔄Sync: Overwrite repo index.html with current code\n🌐Pages: Open GitHub Pages site\n📂Repo: Visit GitHub repository\n📥Download: Save index.html to local PC\n✏️Rename: Change repository name\n🗑️Delete: Permanently remove this repository';
+                '🔄刷新: 获取仓库列表\n⤵️拉取: 加载线上文件到编辑器代码区\n⤴️同步: 将当前代码区代码覆盖到仓库index.html\n🌐网页: 打开在线预览html页面\n📂仓库: 前往GitHub该仓库管理页面\n💾下载: 下载所选仓库的index.html文件到本地\n✏️重命名: 修改该仓库名称\n​🚮删除: 永久移除该仓库' : 
+                '🔄Refresh: Fetch repo list\n⤵️Pull: Load online file to editor\n⤴️Sync: Overwrite repo index.html with current code\n🌐Pages: Open GitHub Pages site\n📂Repo: Visit GitHub repository\n💾Download: Save index.html to local PC\n✏️Rename: Change repository name\n​🚮Delete: Permanently remove this repository';
             alert(help);
         }
         async function ghFetch(path, options = {}) {
@@ -1446,7 +1446,7 @@
                 codeArea.value = decodeURIComponent(escape(atob(file.content)));
                 saveHistory();
                 updateLineNumbers();
-                alert("Repo content loaded to editor! 🔘");
+                alert("Repo content loaded to editor! ⤵️");
             } catch (e) { alert("Load Error: " + e.message); }
         }
 
@@ -1494,7 +1494,7 @@
             try {
                 await ghFetch(`/repos/${repo}`, { method: 'DELETE' });
                 ghListRepos();
-                alert("Deleted. 🗑️");
+                alert("Deleted. ​🚮");
             } catch (e) { alert("Delete Error: " + e.message); }
         }
 
