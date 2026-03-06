@@ -493,6 +493,7 @@
             <div class="flex items-center gap-2">
                 <span class="text-xs">💕</span>
                 <span id="aiPanelTitle" class="text-sm font-bold text-purple-400" data-cn="AI 助手" data-en="AI Assistant">AI 助手</span>
+                <button onclick="showMainHelp()" class="text-[10px] bg-purple-500/10 text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20" data-cn="说明" data-en="Help">说明</button>
             </div>
             <button onclick="toggleAiPanel()" class="text-[var(--text-dim)] hover:text-[var(--text-main)]">✕</button>
         </div>
@@ -1459,6 +1460,49 @@
             if (!repo) return alert("Select a repo");
             const [owner, name] = repo.split('/');
             window.open(`https://${owner}.github.io/${name}/`, '_blank');
+        }
+
+        function showMainHelp() {
+            const isCn = currentLang === 'cn';
+            const items = [
+                { sel: '#aiToggleBtn svg', cn: 'AI 助手: 呼出AI助手，根据指令修改代码', en: 'AI Assistant: Code modifications via prompt' },
+                { sel: '#magicWandBtn svg', cn: '智能建议: 智能分析当前代码并提供改进建议', en: 'Smart Suggest: Code analysis and improvements' },
+                { sel: 'label[data-title-cn="打开文件"] svg', cn: '打开文件: 导入本地HTML文件', en: 'Open File: Import local HTML file' },
+                { sel: 'button[onclick="toggleThemePanel()"] svg', cn: '设置: 切换主题、语言及界面开关', en: 'Settings: Themes, Language & UI Toggles' },
+                { html: '<span class="text-lg">↩↪</span>', cn: '撤销/重做: 历史操作回溯', en: 'Undo/Redo: Navigate edit history' },
+                { sel: 'button[onclick="handleClick(event)"] svg', cn: '运行: 点击运行，长按开启实时预览', en: 'Run: Click to run, hold for live sync' },
+                { sel: 'button[onclick="downloadCode()"] svg', cn: '下载: 将代码保存为HTML文件到本地', en: 'Download: Save current code as local HTML' }
+            ];
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm';
+            modal.onclick = () => modal.remove();
+            
+            const content = `
+                <div class="bg-[var(--bg-ui)] border border-[var(--border)] rounded-2xl p-5 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+                    <div class="flex justify-between items-center mb-5 border-b border-[var(--border)] pb-2">
+                        <h3 class="font-bold text-[var(--accent)] text-base">${isCn ? '主界面按钮说明' : 'Interface Guide'}</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-[var(--text-dim)] hover:text-white transition-colors">✕</button>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        ${items.map((item, i) => {
+                            let iconHtml = item.html || document.querySelector(item.sel).outerHTML;
+                            return `
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-[var(--bg-main)] rounded-xl border border-[var(--border)] shadow-inner">
+                                    <div class="w-7 h-7 flex items-center justify-center">${iconHtml}</div>
+                                </div>
+                                <div class="text-xs leading-relaxed text-[var(--text-main)] flex-grow">
+                                    <span class="font-bold text-[var(--accent)]">${i+1}. </span>
+                                    ${isCn ? item.cn : item.en}
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            modal.innerHTML = content;
+            document.body.appendChild(modal);
         }
 
         async function ghDownloadToPC() {
