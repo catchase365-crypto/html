@@ -1378,10 +1378,39 @@
 
         // --- GitHub Helper Logic ---
         function showGhHelp() {
-            const help = currentLang === 'cn' ? 
-                '🔄刷新: 获取仓库列表\n⤵️拉取: 加载线上文件到编辑器代码区\n⤴️同步: 将当前代码区代码覆盖到仓库index.html\n🌐网页: 打开在线预览html页面\n📂仓库: 前往GitHub该仓库管理页面\n💾下载: 下载所选仓库的index.html文件到本地\n✏️重命名: 修改该仓库名称\n​🚮删除: 永久移除该仓库' : 
-                '🔄Refresh: Fetch repo list\n⤵️Pull: Load online file to editor\n⤴️Sync: Overwrite repo index.html with current code\n🌐Pages: Open GitHub Pages site\n📂Repo: Visit GitHub repository\n💾Download: Save index.html to local PC\n✏️Rename: Change repository name\n​🚮Delete: Permanently remove this repository';
-            alert(help);
+            const isCn = currentLang === 'cn';
+            const items = [
+                { icon: '🔄', cn: '刷新: 获取仓库列表', en: 'Refresh: Fetch repo list' },
+                { icon: '⤵️', cn: '拉取: 加载线上文件到编辑器', en: 'Pull: Load online file to editor' },
+                { icon: '⤴️', cn: '同步: 将当前代码同步至仓库', en: 'Sync: Push code to repository' },
+                { icon: '🌐', cn: '网页: 打开 GitHub Pages 预览', en: 'Pages: Open GitHub Pages' },
+                { icon: '📂', cn: '仓库: 前往 GitHub 仓库页面', en: 'Repo: Visit GitHub repository' },
+                { icon: '💾', cn: '下载: 保存文件到本地', en: 'Download: Save to local PC' },
+                { icon: '✏️', cn: '重命名: 修改仓库名称', en: 'Rename: Change repository name' },
+                { icon: '​🚮', cn: '删除: 永久移除此仓库', en: 'Delete: Permanently remove repo' }
+            ];
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm';
+            modal.onclick = () => modal.remove();
+            
+            modal.innerHTML = `
+                <div class="bg-[var(--bg-ui)] border border-[var(--border)] rounded-2xl p-5 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+                    <div class="flex justify-between items-center mb-5 border-b border-[var(--border)] pb-2">
+                        <h3 class="font-bold text-[var(--accent)] text-base">${isCn ? 'GitHub 功能说明' : 'GitHub Guide'}</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-[var(--text-dim)] hover:text-white transition-colors">✕</button>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        ${items.map((item, i) => `
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 flex items-center justify-center bg-[var(--bg-main)] rounded-lg border border-[var(--border)] text-sm">${item.icon}</div>
+                                <div class="text-xs text-[var(--text-main)]">${isCn ? item.cn : item.en}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
         async function ghFetch(path, options = {}) {
             const token = document.getElementById('ghToken').value.trim();
