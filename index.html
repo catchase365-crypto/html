@@ -701,6 +701,33 @@
         </div>
     </div>
 
+    <!-- GitHub Integration Row -->
+    <div id="githubRow" class="ui-panel p-1.5 flex flex-nowrap items-center gap-2 shrink-0 z-10 overflow-x-auto no-scrollbar border-t border-[var(--border)]">
+        <div class="flex items-center gap-1 shrink-0">
+            <button class="text-sm px-1" title="GitHub Actions" onclick="alert('GitHub Token设置:\n请输入您的GitHub Personal Access Token'); document.getElementById('ghToken').classList.toggle('hidden')">🐙</button>
+            <input type="password" id="ghToken" placeholder="Token..." class="hidden bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] w-20 outline-none focus:border-blue-500 transition-all">
+        </div>
+        <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
+        <div class="flex items-center gap-1 shrink-0">
+            <select id="repoSelect" onchange="updateRepoLink()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] max-w-[100px] outline-none">
+                <option value="">Repos...</option>
+            </select>
+            <button onclick="if(confirm('确定刷新仓库列表吗？')) ghListRepos()" class="icon-btn p-1 text-xs" title="Refresh Repo List">📡</button>
+            <button onclick="if(confirm('确定从仓库拉取index.html吗？此操作会覆盖当前编辑器内容。')) ghDownloadIndex()" class="icon-btn p-1 text-xs" title="Load Repo index.html to Editor">🔘</button>
+            <button onclick="if(confirm('确定同步当前代码到GitHub吗？')) ghUpdateRepo()" class="icon-btn p-1 text-xs" title="Overwrite Repo index.html with Current Code">🔄</button>
+            <button onclick="ghOpenPages()" class="icon-btn p-1 text-xs" title="Open GitHub Pages">🌐</button>
+            <button id="ghRepoLinkBtn" onclick="ghOpenRepo()" class="icon-btn p-1 text-xs" title="Open Repo">📂</button>
+            <button onclick="ghDownloadToPC()" class="icon-btn p-1 text-xs" title="Download Repo index.html to PC">📥</button>
+            <button onclick="if(confirm('确定重命名此仓库吗？')) ghRenameRepo()" class="icon-btn p-1 text-xs" title="Rename Repo">✏️</button>
+            <button onclick="if(confirm('危险操作：确定永久删除此仓库吗？')) ghDeleteRepo()" class="icon-btn p-1 text-xs text-red-400" title="Delete Repo">🗑️</button>
+        </div>
+        <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
+        <div class="flex items-center gap-1 flex-grow min-w-0">
+            <input type="text" id="newRepoName" placeholder="New Repo..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] flex-grow min-w-[60px] outline-none">
+            <button onclick="ghCreateRepo()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-1.5 rounded transition-colors whitespace-nowrap">🚀 Create</button>
+        </div>
+    </div>
+
     <div id="quickBar" class="ui-panel p-1 shrink-0 quick-bar whitespace-nowrap flex items-center gap-2 px-2 h-10 border-none hidden">
         <span class="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mr-1">Quick:</span>
         <button onclick="insertText('<div class=\x22\x22></div>', 12)" class="icon-btn text-xs py-1">&lt;div&gt;</button>
@@ -798,6 +825,13 @@
             if (localStorage.getItem('html_editor_linenum_visible') === 'false') toggleLineNumbers();
             if (localStorage.getItem('html_editor_quickbar_visible') === 'true') toggleQuickBar();
             if (localStorage.getItem('html_editor_bg_visible') === 'false') toggleBackground();
+            
+            // GitHub Initialization
+            const savedToken = localStorage.getItem('gh_token');
+            if (savedToken) { 
+                document.getElementById('ghToken').value = savedToken;
+                ghListRepos();
+            }
             
             updateLineNumbers();
             updateHistoryButtons();
@@ -1284,6 +1318,140 @@
                 doc.write(codeArea.value);
                 doc.close();
             }
+        }
+
+        // --- GitHub Helper Logic ---
+        async function ghFetch(path, options = {}) {
+            const token = document.getElementById('ghToken').value.trim();
+            if (!token) throw new Error("Token required");
+            localStorage.setItem('gh_token', token);
+            
+            const headers = {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                ...options.headers
+            };
+            const response = await fetch(`https://api.github.com${path}`, { ...options, headers });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || "Request failed");
+            }
+            return response.status === 204 ? null : response.json();
+        }
+
+        async function ghListRepos() {
+            try {
+                const repos = await ghFetch('/user/repos?per_page=100&sort=updated');
+                const select = document.getElementById('repoSelect');
+                select.innerHTML = '<option value="">Repos...</option>' + 
+                    repos.map(r => `<option value="${r.full_name}" data-url="${r.html_url}">${r.name}</option>`).join('');
+            } catch (e) { alert("GitHub: " + e.message); }
+        }
+
+        function updateRepoLink() {
+            const select = document.getElementById('repoSelect');
+            const opt = select.options[select.selectedIndex];
+            document.getElementById('ghRepoLinkBtn').dataset.url = opt.dataset.url || "#";
+        }
+
+        function ghOpenRepo() {
+            const url = document.getElementById('ghRepoLinkBtn').dataset.url;
+            if (url && url !== "#") window.open(url, '_blank');
+        }
+
+        async function ghUpdateRepo() {
+            const repo = document.getElementById('repoSelect').value;
+            if (!repo) return alert("Select a repo");
+            try {
+                let sha = "";
+                try {
+                    const file = await ghFetch(`/repos/${repo}/contents/index.html`);
+                    sha = file.sha;
+                } catch(e) {}
+                
+                await ghFetch(`/repos/${repo}/contents/index.html`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        message: "Update via HTML Editor AI",
+                        content: btoa(unescape(encodeURIComponent(codeArea.value))),
+                        sha: sha
+                    })
+                });
+                alert("index.html synced successfully! 🌐");
+            } catch (e) { alert("Sync Error: " + e.message); }
+        }
+
+        async function ghDownloadIndex() {
+            const repo = document.getElementById('repoSelect').value;
+            if (!repo) return alert("Select a repo");
+            try {
+                const file = await ghFetch(`/repos/${repo}/contents/index.html`);
+                codeArea.value = decodeURIComponent(escape(atob(file.content)));
+                saveHistory();
+                updateLineNumbers();
+                alert("Repo content loaded to editor! 🔘");
+            } catch (e) { alert("Load Error: " + e.message); }
+        }
+
+        function ghOpenPages() {
+            const repo = document.getElementById('repoSelect').value;
+            if (!repo) return alert("Select a repo");
+            const [owner, name] = repo.split('/');
+            window.open(`https://${owner}.github.io/${name}/`, '_blank');
+        }
+
+        async function ghDownloadToPC() {
+            const repo = document.getElementById('repoSelect').value;
+            if (!repo) return alert("Select a repo");
+            try {
+                const file = await ghFetch(`/repos/${repo}/contents/index.html`);
+                const content = decodeURIComponent(escape(atob(file.content)));
+                const blob = new Blob([content], {type:'text/html'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `index_${repo.replace('/','_')}.html`;
+                a.click();
+            } catch (e) { alert("Download Error: " + e.message); }
+        }
+
+        async function ghCreateRepo() {
+            const name = document.getElementById('newRepoName').value.trim();
+            if (!name) return alert("Enter a repo name");
+            if (!confirm(`确定要创建新仓库: ${name} 吗？`)) return;
+            try {
+                const repo = await ghFetch('/user/repos', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, auto_init: true })
+                });
+                await ghListRepos();
+                document.getElementById('repoSelect').value = repo.full_name;
+                alert("Repo created! 🚀 Syncing index.html...");
+                ghUpdateRepo();
+            } catch (e) { alert("Create Error: " + e.message); }
+        }
+
+        async function ghDeleteRepo() {
+            const repo = document.getElementById('repoSelect').value;
+            if (!repo || !confirm(`Permanently delete ${repo}?`)) return;
+            try {
+                await ghFetch(`/repos/${repo}`, { method: 'DELETE' });
+                ghListRepos();
+                alert("Deleted. 🗑️");
+            } catch (e) { alert("Delete Error: " + e.message); }
+        }
+
+        async function ghRenameRepo() {
+            const repo = document.getElementById('repoSelect').value;
+            const newName = prompt("Enter new name:");
+            if (!repo || !newName) return;
+            try {
+                await ghFetch(`/repos/${repo}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ name: newName })
+                });
+                ghListRepos();
+                alert("Renamed! ✏️");
+            } catch (e) { alert("Rename Error: " + e.message); }
         }
     </script>
 </body>
