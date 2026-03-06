@@ -707,8 +707,13 @@
     <!-- GitHub Integration Row -->
     <div id="githubRow" class="ui-panel p-1.5 flex flex-nowrap items-center gap-2 shrink-0 z-10 overflow-x-auto no-scrollbar">
         <div class="flex items-center gap-1 shrink-0">
-            <button class="text-sm px-1" title="GitHub Actions" onclick="alert('GitHub Token设置:\n请输入您的GitHub Personal Access Token'); document.getElementById('ghToken').classList.toggle('hidden')">🐙</button>
-            <input type="password" id="ghToken" placeholder="Token..." class="hidden bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] w-20 outline-none focus:border-blue-500 transition-all">
+            <button class="text-sm px-1" title="GitHub Settings" onclick="document.getElementById('ghPanel').classList.toggle('hidden')">🐙</button>
+            <div id="ghPanel" class="hidden absolute bottom-10 left-2 z-50 bg-[var(--bg-ui)] border border-[var(--border)] p-3 rounded-xl shadow-2xl w-[200px]">
+                <label class="text-[10px] text-[var(--text-dim)] uppercase">GitHub Token</label>
+                <input type="password" id="ghToken" placeholder="ghp_..." class="w-full bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 mt-1 rounded border border-[var(--border)] focus:border-blue-500 outline-none">
+                <button onclick="document.getElementById('ghPanel').classList.add('hidden')" class="w-full mt-2 bg-blue-600 text-white text-xs py-1.5 rounded">Save</button>
+                <button onclick="alert('📡刷新:获取仓库列表\n🔘拉取:加载线上文件到编辑器代码区\n🔄同步:将当前代码区代码覆盖到仓库index.html\n🌐网页:打开在线预览html页面\n📂仓库:前往GitHub该仓库管理页面\n📥下载:下载所选仓库的index.html文件到本地\n✏️重命名:修改该仓库名称\n🗑️删除:永久移除该仓库')" class="w-full mt-1 bg-gray-700 text-white text-[10px] py-1 rounded">查看按钮功能说明</button>
+            </div>
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
         <div class="flex items-center gap-1 shrink-0">
