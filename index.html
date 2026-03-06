@@ -117,12 +117,12 @@
         }
         .font-btn:hover { filter: brightness(1.2); }
 
-        .quick-bar {
+        .quick-bar, .no-scrollbar {
             overflow-x: auto;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        .quick-bar::-webkit-scrollbar { display: none; }
+        .quick-bar::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar { display: none; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -532,6 +532,9 @@
         <button onclick="toggleBackground()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
             <span>🖼️</span> <span id="bgToggleText">BG [ON]</span>
         </button>
+        <button onclick="toggleGithubRow()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
+            <span>🐙</span> <span id="ghRowToggleText">GitHub [ON]</span>
+        </button>
         <div class="w-full h-[1px] bg-[var(--border)] mb-2"></div>
         <div id="themeList" class="flex flex-col gap-1"></div>
         <div class="w-full h-[1px] bg-[var(--border)] my-2"></div>
@@ -825,6 +828,7 @@
             if (localStorage.getItem('html_editor_linenum_visible') === 'false') toggleLineNumbers();
             if (localStorage.getItem('html_editor_quickbar_visible') === 'true') toggleQuickBar();
             if (localStorage.getItem('html_editor_bg_visible') === 'false') toggleBackground();
+            if (localStorage.getItem('html_editor_ghrow_visible') === 'false') toggleGithubRow();
             
             // GitHub Initialization
             const savedToken = localStorage.getItem('gh_token');
@@ -1062,6 +1066,14 @@
             const isHidden = container.classList.contains('no-bg');
             document.getElementById('bgToggleText').textContent = isHidden ? "BG [OFF]" : "BG [ON]";
             localStorage.setItem('html_editor_bg_visible', !isHidden);
+        }
+
+        function toggleGithubRow() {
+            const row = document.getElementById('githubRow');
+            row.classList.toggle('hidden');
+            const isHidden = row.classList.contains('hidden');
+            document.getElementById('ghRowToggleText').textContent = isHidden ? "GitHub [OFF]" : "GitHub [ON]";
+            localStorage.setItem('html_editor_ghrow_visible', !isHidden);
         }
 
         function changeFontSize(delta) {
