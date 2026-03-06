@@ -190,7 +190,7 @@
 
     <header class="ui-panel p-2 flex items-center justify-between shrink-0 z-30 shadow-sm relative">
         <div class="flex items-center gap-1">
-            <button id="aiToggleBtn" onclick="toggleAiPanel()" class="icon-btn w-9 h-9 border-emerald-500/50 text-emerald-400 bg-emerald-900/20 overflow-hidden relative" title="AI Assistant">
+            <button id="aiToggleBtn" onclick="toggleAiPanel()" class="icon-btn w-9 h-9 border-emerald-500/50 text-emerald-400 bg-emerald-900/20 overflow-hidden relative" data-title-cn="AI 助手" data-title-en="AI Assistant" title="AI Assistant">
                 <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" class="w-5 h-6 drop-shadow-[0_0_5px_rgba(0,255,127,0.4)]">
                     <defs>
                         <radialGradient id="gradTable" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"><stop offset="0%" stop-color="#005c29" /><stop offset="100%" stop-color="#003d1a" /></radialGradient>
@@ -214,7 +214,7 @@
                     <line x1="38" y1="35" x2="62" y2="35" stroke="white" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/>
                 </svg>
             </button>
-            <button id="magicWandBtn" onclick="toggleSuggestionPanel()" class="icon-btn w-9 h-9 border-indigo-500/50 text-indigo-400 bg-indigo-900/20" title="Smart Suggestions" aria-label="Smart Suggestions">
+            <button id="magicWandBtn" onclick="toggleSuggestionPanel()" class="icon-btn w-9 h-9 border-indigo-500/50 text-indigo-400 bg-indigo-900/20" data-title-cn="智能建议" data-title-en="Smart Suggestions" title="Smart Suggestions">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-[1.75rem] h-[1.75rem]">
                     <defs>
                         <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -232,7 +232,7 @@
                 </svg>
             </button>
             <div class="w-[1px] h-6 bg-[var(--border)] mx-0.5"></div>
-            <label class="icon-btn w-9 h-9 p-0 overflow-hidden" title="Open File">
+            <label class="icon-btn w-9 h-9 p-0 overflow-hidden" data-title-cn="打开文件" data-title-en="Open File" title="Open File">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="w-3/5 h-3/5">
   <defs>
     <!-- Primary Red Gradient for the "Head" -->
@@ -295,7 +295,7 @@
 </svg>
                 <input type="file" id="fileInput" accept=".html,.htm,.txt" class="hidden">
             </label>
-            <button onclick="toggleThemePanel()" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" title="Settings">
+            <button onclick="toggleThemePanel()" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" data-title-cn="设置" data-title-en="Settings" title="Settings">
                 <!-- 此处调节大小: 19/25 = 76% (通过调整 class 中的 w-[76%] h-[76%] 改变比例；通过调整 viewBox 裁剪实现类似蒙版的满格效果) -->
                 <svg viewBox="9 9 82 82" xmlns="http://www.w3.org/2000/svg" class="w-[70%] h-[70%]">
   <defs>
@@ -351,11 +351,11 @@
             </button>
             <div class="w-[1px] h-6 bg-[var(--border)] mx-1"></div>
             <div class="flex gap-1">
-                <button id="undoBtn" onclick="editorUndo()" class="icon-btn w-9 h-9 px-0 relative" title="Undo">
+                <button id="undoBtn" onclick="editorUndo()" class="icon-btn w-9 h-9 px-0 relative" data-title-cn="撤销" data-title-en="Undo" title="Undo">
                     <span>↩</span>
                     <span id="undoCount" class="history-badge">0</span>
                 </button>
-                <button id="redoBtn" onclick="editorRedo()" class="icon-btn w-9 h-9 px-0 relative" title="Redo">
+                <button id="redoBtn" onclick="editorRedo()" class="icon-btn w-9 h-9 px-0 relative" data-title-cn="重做" data-title-en="Redo" title="Redo">
                     <span>↪</span>
                     <span id="redoCount" class="history-badge">0</span>
                 </button>
@@ -364,7 +364,7 @@
         </div>
 
         <div class="flex items-center gap-1">
-            <button onclick="handleClick(event)" onmousedown="startPress()" ontouchstart="startPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()" ontouchend="cancelPress()" oncontextmenu="return false;" class="icon-btn w-9 h-9 px-0 border-green-900/50 text-green-400 bg-green-900/10" title="Run (Hold for Live Preview)">
+            <button onclick="handleClick(event)" onmousedown="startPress()" ontouchstart="startPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()" ontouchend="cancelPress()" oncontextmenu="return false;" class="icon-btn w-9 h-9 px-0 border-green-900/50 text-green-400 bg-green-900/10" data-title-cn="运行 (长按开启实时预览)" data-title-en="Run (Hold for Live Preview)" title="Run (Hold for Live Preview)">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" class="w-[2.1rem] h-[2.1rem]">
   <defs>
     <linearGradient id="metal-grad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -407,7 +407,7 @@
   <ellipse cx="50" cy="37" rx="6" ry="1.2" fill="#ffffff"></ellipse>
 </svg>
             </button>
-            <button onclick="downloadCode()" class="icon-btn w-9 h-9 px-0 border-blue-900/50 text-blue-400 bg-blue-900/10" title="Download">
+            <button onclick="downloadCode()" class="icon-btn w-9 h-9 px-0 border-blue-900/50 text-blue-400 bg-blue-900/10" data-title-cn="下载到本地" data-title-en="Download" title="Download">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" class="w-[2.1rem] h-[2.1rem]">
   <defs>
     <linearGradient id="walletBody" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -470,8 +470,8 @@
         <div class="flex justify-between items-center pb-2 border-b border-[var(--border)]">
             <div class="flex items-center gap-2">
                 <span class="text-xs">🪄</span>
-                <span class="text-sm font-bold text-amber-400">Smart Suggestions</span>
-                <button onclick="clearSuggestions()" class="text-[10px] bg-red-500/10 text-red-400/70 hover:text-red-400 border border-red-500/20 px-1 rounded transition-colors ml-1">Clear</button>
+                <span class="text-sm font-bold text-amber-400" data-cn="智能建议" data-en="Smart Suggestions">智能建议</span>
+                <button onclick="clearSuggestions()" class="text-[10px] bg-red-500/10 text-red-400/70 hover:text-red-400 border border-red-500/20 px-1 rounded transition-colors ml-1" data-cn="清除" data-en="Clear">清除</button>
             </div>
             <button onclick="toggleSuggestionPanel()" class="text-[var(--text-dim)] hover:text-[var(--text-main)]">✕</button>
         </div>
@@ -482,7 +482,7 @@
 
         <div class="flex flex-col gap-1">
             <div class="flex gap-1">
-                <input type="text" id="suggestChatInput" placeholder="What suggestions? (Leave blank for auto-analysis)" class="flex-grow bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-amber-500 outline-none">
+                <input type="text" id="suggestChatInput" data-placeholder-cn="需要什么建议？(留空则自动分析)" data-placeholder-en="What suggestions? (Leave blank for auto-analysis)" placeholder="What suggestions?" class="flex-grow bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-amber-500 outline-none">
                 <button id="innerSuggestBtn" onclick="getSmartSuggestions()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 rounded text-xs transition-colors">💕</button>
             </div>
         </div>
@@ -492,18 +492,18 @@
         <div class="flex justify-between items-center pb-2 border-b border-[var(--border)]">
             <div class="flex items-center gap-2">
                 <span class="text-xs">💕</span>
-                <span id="aiPanelTitle" class="text-sm font-bold text-purple-400">AI Assistant</span>
+                <span id="aiPanelTitle" class="text-sm font-bold text-purple-400" data-cn="AI 助手" data-en="AI Assistant">AI 助手</span>
             </div>
             <button onclick="toggleAiPanel()" class="text-[var(--text-dim)] hover:text-[var(--text-main)]">✕</button>
         </div>
         
         <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-[var(--text-dim)] uppercase">API Key</label>
-            <input type="password" id="apiKeyInput" placeholder="Paste Key..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
+            <label class="text-[10px] text-[var(--text-dim)] uppercase" data-cn="API 密钥" data-en="API Key">API 密钥</label>
+            <input type="password" id="apiKeyInput" data-placeholder-cn="粘贴密钥..." data-placeholder-en="Paste Key..." placeholder="Paste Key..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
         </div>
 
         <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-[var(--text-dim)] uppercase">Model</label>
+            <label class="text-[10px] text-[var(--text-dim)] uppercase" data-cn="模型" data-en="Model">模型</label>
             <select id="aiModelSelect" onchange="saveAiModel()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none">
                 <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview</option>
                 <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
@@ -512,8 +512,8 @@
         </div>
 
         <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-[var(--text-dim)] uppercase">Prompt</label>
-            <textarea id="aiPromptInput" rows="3" placeholder="Example: Make buttons rounded and blue..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-sm p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none resize-none"></textarea>
+            <label class="text-[10px] text-[var(--text-dim)] uppercase" data-cn="指令" data-en="Prompt">指令</label>
+            <textarea id="aiPromptInput" rows="3" data-placeholder-cn="例如：让按钮变圆并设为蓝色..." data-placeholder-en="Example: Make buttons rounded and blue..." placeholder="Example: Make buttons rounded and blue..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-sm p-2 rounded border border-[var(--border)] focus:border-purple-500 outline-none resize-none"></textarea>
         </div>
 
         <button onclick="callGemini()" id="aiSendBtn" class="bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 rounded font-medium transition-colors flex justify-center items-center gap-2">
@@ -523,29 +523,33 @@
     </div>
 
     <div id="themePanel" class="hidden absolute top-14 left-16 z-40 bg-[var(--bg-ui)] border border-[var(--border)] p-2 rounded-xl shadow-2xl w-48 max-h-[60vh] overflow-y-auto">
+        <div class="flex gap-1 mb-2">
+            <button id="langCN" onclick="setLang('cn')" class="flex-1 py-1 rounded text-[10px] bg-[var(--accent)] text-white font-bold">中文</button>
+            <button id="langEN" onclick="setLang('en')" class="flex-1 py-1 rounded text-[10px] bg-[var(--bg-main)] text-[var(--text-dim)] border border-[var(--border)]">EN</button>
+        </div>
         <button onclick="toggleLineNumbers()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
-            <span>🔢</span> <span id="lineNumToggleText">Line [ON]</span>
+            <span>🔢</span> <span id="lineNumToggleText" data-cn="行号 [开]" data-en="Line [ON]">行号 [开]</span>
         </button>
         <button onclick="toggleQuickBar()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
-            <span>&lt;/&gt;</span> <span id="quickBarToggleText">Quick [OFF]</span>
+            <span>&lt;/&gt;</span> <span id="quickBarToggleText" data-cn="快捷 [关]" data-en="Quick [OFF]">快捷 [关]</span>
         </button>
         <button onclick="toggleBackground()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
-            <span>🖼️</span> <span id="bgToggleText">BG [ON]</span>
+            <span>🖼️</span> <span id="bgToggleText" data-cn="背景 [开]" data-en="BG [ON]">背景 [开]</span>
         </button>
         <button onclick="toggleGithubRow()" class="w-full text-left px-3 py-2 rounded text-sm hover:brightness-110 transition flex items-center gap-2 mb-2 text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border)]">
-            <span>🐙</span> <span id="ghRowToggleText">GitHub [ON]</span>
+            <span>🐙</span> <span id="ghRowToggleText" data-cn="GitHub [开]" data-en="GitHub [ON]">GitHub [开]</span>
         </button>
         <div class="w-full h-[1px] bg-[var(--border)] mb-2"></div>
         <div id="themeList" class="flex flex-col gap-1"></div>
         <div class="w-full h-[1px] bg-[var(--border)] my-2"></div>
         <button onclick="applyRandomTheme()" class="w-full text-left px-3 py-2 rounded text-sm bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-bold hover:scale-[1.02] transition shadow-lg flex items-center gap-2">
-            <span>🎲</span> <span>Random Style</span>
+            <span>🎲</span> <span data-cn="随机样式" data-en="Random Style">随机样式</span>
         </button>
     </div>
 
     <div class="ui-panel p-1.5 flex flex-nowrap items-center gap-2 shrink-0 z-20">
         <div class="flex items-center flex-grow bg-[var(--bg-main)] rounded-full border border-[var(--border)] px-4 py-1.5 min-w-0">
-            <input type="text" id="searchInput" placeholder="Search..." class="bg-transparent border-none text-sm text-[var(--text-main)] focus:outline-none w-full min-w-[20px]">
+            <input type="text" id="searchInput" data-placeholder-cn="搜索..." data-placeholder-en="Search..." placeholder="Search..." class="bg-transparent border-none text-sm text-[var(--text-main)] focus:outline-none w-full min-w-[20px]">
             <span id="searchCount" class="text-[10px] font-mono text-[var(--text-dim)] whitespace-nowrap px-2 py-0.5 bg-[var(--bg-ui)] border border-[var(--border)] rounded-full ml-1 text-center shadow-inner opacity-0 scale-90 transition-all duration-200 pointer-events-none"></span>
         </div>
         <div class="flex items-center gap-1 shrink-0">
@@ -628,7 +632,7 @@
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] mx-1 shrink-0"></div>
         <div class="flex items-center gap-1 shrink-0">
-            <button onclick="changeFontSize(-1)" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" title="Decrease Font Size">
+            <button onclick="changeFontSize(-1)" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" data-title-cn="减小字号" data-title-en="Decrease Font Size" title="Decrease Font Size">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" class="w-3/5 h-3/5">
                   <defs>
                     <linearGradient id="gem-base-m" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -664,7 +668,7 @@
                   <path d="M48 27 L25 78 M72 78 L52 27" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.4"></path>
                 </svg>
             </button>
-            <button onclick="changeFontSize(1)" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" title="Increase Font Size">
+            <button onclick="changeFontSize(1)" class="icon-btn w-9 h-9 p-0 flex items-center justify-center" data-title-cn="增大字号" data-title-en="Increase Font Size" title="Increase Font Size">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" class="w-4/5 h-4/5">
                   <defs>
                     <linearGradient id="gem-base-p" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -711,8 +715,8 @@
             <div id="ghPanel" class="hidden absolute bottom-10 left-2 z-50 bg-[var(--bg-ui)] border border-[var(--border)] p-3 rounded-xl shadow-2xl w-[200px]">
                 <label class="text-[10px] text-[var(--text-dim)] uppercase">GitHub Token</label>
                 <input type="password" id="ghToken" placeholder="ghp_..." class="w-full bg-[var(--bg-main)] text-[var(--text-main)] text-xs p-2 mt-1 rounded border border-[var(--border)] focus:border-blue-500 outline-none">
-                <button onclick="document.getElementById('ghPanel').classList.add('hidden')" class="w-full mt-2 bg-blue-600 text-white text-xs py-1.5 rounded">Save</button>
-                <button onclick="alert('📡刷新:获取仓库列表\n🔘拉取:加载线上文件到编辑器代码区\n🔄同步:将当前代码区代码覆盖到仓库index.html\n🌐网页:打开在线预览html页面\n📂仓库:前往GitHub该仓库管理页面\n📥下载:下载所选仓库的index.html文件到本地\n✏️重命名:修改该仓库名称\n🗑️删除:永久移除该仓库')" class="w-full mt-1 bg-gray-700 text-white text-[10px] py-1 rounded">查看按钮功能说明</button>
+                <button onclick="document.getElementById('ghPanel').classList.add('hidden')" class="w-full mt-2 bg-blue-600 text-white text-xs py-1.5 rounded" data-cn="保存" data-en="Save">保存</button>
+                <button id="ghHelpBtn" onclick="showGhHelp()" class="w-full mt-1 bg-gray-700 text-white text-[10px] py-1 rounded" data-cn="查看按钮功能说明" data-en="View Button Functions">查看按钮功能说明</button>
             </div>
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
@@ -720,24 +724,24 @@
             <select id="repoSelect" onchange="updateRepoLink()" class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] max-w-[100px] outline-none">
                 <option value="">Repos...</option>
             </select>
-            <button onclick="if(confirm('确定刷新仓库列表吗？')) ghListRepos()" class="icon-btn p-1 text-xs" title="Refresh Repo List">📡</button>
-            <button onclick="if(confirm('确定从仓库拉取index.html吗？此操作会覆盖当前编辑器内容。')) ghDownloadIndex()" class="icon-btn p-1 text-xs" title="Load Repo index.html to Editor">🔘</button>
-            <button onclick="if(confirm('确定同步当前代码到GitHub吗？')) ghUpdateRepo()" class="icon-btn p-1 text-xs" title="Overwrite Repo index.html with Current Code">🔄</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定刷新仓库列表吗？':'Refresh repo list?')) ghListRepos()" class="icon-btn p-1 text-xs" title="Refresh Repo List">📡</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定从仓库拉取index.html吗？此操作会覆盖当前编辑器内容。':'Pull index.html from repo? This will overwrite current code.')) ghDownloadIndex()" class="icon-btn p-1 text-xs" title="Load Repo index.html to Editor">🔘</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定同步当前代码到GitHub吗？':'Sync current code to GitHub?')) ghUpdateRepo()" class="icon-btn p-1 text-xs" title="Overwrite Repo index.html with Current Code">🔄</button>
             <button onclick="ghOpenPages()" class="icon-btn p-1 text-xs" title="Open GitHub Pages">🌐</button>
             <button id="ghRepoLinkBtn" onclick="ghOpenRepo()" class="icon-btn p-1 text-xs" title="Open Repo">📂</button>
             <button onclick="ghDownloadToPC()" class="icon-btn p-1 text-xs" title="Download Repo index.html to PC">📥</button>
-            <button onclick="if(confirm('确定重命名此仓库吗？')) ghRenameRepo()" class="icon-btn p-1 text-xs" title="Rename Repo">✏️</button>
-            <button onclick="if(confirm('危险操作：确定永久删除此仓库吗？')) ghDeleteRepo()" class="icon-btn p-1 text-xs text-red-400" title="Delete Repo">🗑️</button>
+            <button onclick="if(confirm(currentLang==='cn'?'确定重命名此仓库吗？':'Rename this repository?')) ghRenameRepo()" class="icon-btn p-1 text-xs" title="Rename Repo">✏️</button>
+            <button onclick="if(confirm(currentLang==='cn'?'危险操作：确定永久删除此仓库吗？':'DANGER: Permanently delete this repository?')) ghDeleteRepo()" class="icon-btn p-1 text-xs text-red-400" title="Delete Repo">🗑️</button>
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
         <div class="flex items-center gap-1 flex-grow min-w-0">
-            <input type="text" id="newRepoName" placeholder="New Repo..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] flex-grow min-w-[60px] outline-none">
-            <button onclick="ghCreateRepo()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-1.5 rounded transition-colors whitespace-nowrap">🚀 Create</button>
+            <input type="text" id="newRepoName" data-placeholder-cn="新仓库名..." data-placeholder-en="New Repo..." placeholder="New Repo..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] flex-grow min-w-[60px] outline-none">
+            <button onclick="ghCreateRepo()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-1.5 rounded transition-colors whitespace-nowrap" data-cn="🚀 创建" data-en="🚀 Create">🚀 创建</button>
         </div>
     </div>
 
     <div id="quickBar" class="ui-panel p-1 shrink-0 quick-bar whitespace-nowrap flex items-center gap-2 px-2 h-10 border-none hidden">
-        <span class="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mr-1">Quick:</span>
+        <span class="text-[10px] text-[var(--text-dim)] uppercase tracking-wider mr-1" data-cn="快捷栏:" data-en="Quick:">快捷栏:</span>
         <button onclick="insertText('<div class=\x22\x22></div>', 12)" class="icon-btn text-xs py-1">&lt;div&gt;</button>
         <button onclick="insertText('<p></p>', 4)" class="icon-btn text-xs py-1">&lt;p&gt;</button>
         <button onclick="insertText('<a href=\x22\x22></a>', 9)" class="icon-btn text-xs py-1">&lt;a&gt;</button>
@@ -760,12 +764,12 @@
     <script>
         // --- 1. 配置与初始化 ---
         const themes = [
-            { name: "Deep Purple", bg: "#161122", ui: "#1e192c", text: "#e2e8f0", accent: "#a78bfa", "badge-txt": "#ffffff", border: "#352e46", dim: "#94a3b8", caret: "#ffffff" },
-            { name: "OLED Black", bg: "#000000", ui: "#111111", text: "#e0e0e0", accent: "#ffffff", "badge-txt": "#000000", border: "#333333", dim: "#888888", caret: "#ffffff" },
-            { name: "Hacker Green", bg: "#0d1117", ui: "#161b22", text: "#4ade80", accent: "#22c55e", "badge-txt": "#ffffff", border: "#2d333b", dim: "#6e7681", caret: "#4ade80" },
-            { name: "Solar Light", bg: "#fdf6e3", ui: "#eee8d5", text: "#002b36", accent: "#b58900", "badge-txt": "#ffffff", border: "#d3af86", dim: "#586e75", caret: "#268bd2" },
-            { name: "Arctic Frost", bg: "#f0f9ff", ui: "#e0f2fe", text: "#082f49", accent: "#0284c7", "badge-txt": "#ffffff", border: "#bae6fd", dim: "#0ea5e9", caret: "#0369a1" },
-            { name: "Rose Quartz", bg: "#fff1f2", ui: "#ffe4e6", text: "#4c0519", accent: "#e11d48", "badge-txt": "#ffffff", border: "#fecdd3", dim: "#fb7185", caret: "#be123c" }
+            { name: "Deep Purple", nameCn: "深邃紫", bg: "#161122", ui: "#1e192c", text: "#e2e8f0", accent: "#a78bfa", "badge-txt": "#ffffff", border: "#352e46", dim: "#94a3b8", caret: "#ffffff" },
+            { name: "OLED Black", nameCn: "纯粹黑", bg: "#000000", ui: "#111111", text: "#e0e0e0", accent: "#ffffff", "badge-txt": "#000000", border: "#333333", dim: "#888888", caret: "#ffffff" },
+            { name: "Hacker Green", nameCn: "黑客绿", bg: "#0d1117", ui: "#161b22", text: "#4ade80", accent: "#22c55e", "badge-txt": "#ffffff", border: "#2d333b", dim: "#6e7681", caret: "#4ade80" },
+            { name: "Solar Light", nameCn: "暖阳金", bg: "#fdf6e3", ui: "#eee8d5", text: "#002b36", accent: "#b58900", "badge-txt": "#ffffff", border: "#d3af86", dim: "#586e75", caret: "#268bd2" },
+            { name: "Arctic Frost", nameCn: "极地冰", bg: "#f0f9ff", ui: "#e0f2fe", text: "#082f49", accent: "#0284c7", "badge-txt": "#ffffff", border: "#bae6fd", dim: "#0ea5e9", caret: "#0369a1" },
+            { name: "Rose Quartz", nameCn: "蔷薇粉", bg: "#fff1f2", ui: "#ffe4e6", text: "#4c0519", accent: "#e11d48", "badge-txt": "#ffffff", border: "#fecdd3", dim: "#fb7185", caret: "#be123c" }
         ];
 
         const codeArea = document.getElementById('codeArea');
@@ -774,7 +778,22 @@
         const themeList = document.getElementById('themeList');
         const searchInput = document.getElementById('searchInput');
         const quickBar = document.getElementById('quickBar');
+        let currentLang = 'cn';
         
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('langCN').className = lang === 'cn' ? 'flex-1 py-1 rounded text-[10px] bg-[var(--accent)] text-white font-bold' : 'flex-1 py-1 rounded text-[10px] bg-[var(--bg-main)] text-[var(--text-dim)] border border-[var(--border)]';
+            document.getElementById('langEN').className = lang === 'en' ? 'flex-1 py-1 rounded text-[10px] bg-[var(--accent)] text-white font-bold' : 'flex-1 py-1 rounded text-[10px] bg-[var(--bg-main)] text-[var(--text-dim)] border border-[var(--border)]';
+            
+            document.querySelectorAll('[data-cn]').forEach(el => { el.textContent = lang === 'cn' ? el.dataset.cn : el.dataset.en; });
+            document.querySelectorAll('[data-title-cn]').forEach(el => { el.title = lang === 'cn' ? el.dataset.titleCn : el.dataset.titleEn; });
+            document.querySelectorAll('[data-placeholder-cn]').forEach(el => { el.placeholder = lang === 'cn' ? el.dataset.placeholderCn : el.dataset.placeholderEn; });
+            
+            // Special logic for theme text and placeholder
+            document.getElementById('codeArea').placeholder = lang === 'cn' ? "在此输入代码..." : "Type HTML here...";
+            initThemes();
+        }
+
         // AI 相关 DOM
         const aiPanel = document.getElementById('aiPanel');
         const suggestionPanel = document.getElementById('suggestionPanel');
@@ -1052,7 +1071,10 @@
         function toggleLineNumbers() {
             lineNumbers.classList.toggle('hidden');
             const hidden = lineNumbers.classList.contains('hidden');
-            document.getElementById('lineNumToggleText').textContent = hidden ? "Line [OFF]" : "Line [ON]";
+            const el = document.getElementById('lineNumToggleText');
+            el.dataset.cn = hidden ? "行号 [关]" : "行号 [开]";
+            el.dataset.en = hidden ? "Line [OFF]" : "Line [ON]";
+            el.textContent = currentLang === 'cn' ? el.dataset.cn : el.dataset.en;
             localStorage.setItem('html_editor_linenum_visible', !hidden);
             updateLineNumbers();
         }
@@ -1060,7 +1082,10 @@
         function toggleQuickBar() {
             quickBar.classList.toggle('hidden');
             const hidden = quickBar.classList.contains('hidden');
-            document.getElementById('quickBarToggleText').textContent = hidden ? "Quick [OFF]" : "Quick [ON]";
+            const el = document.getElementById('quickBarToggleText');
+            el.dataset.cn = hidden ? "快捷 [关]" : "快捷 [开]";
+            el.dataset.en = hidden ? "Quick [OFF]" : "Quick [ON]";
+            el.textContent = currentLang === 'cn' ? el.dataset.cn : el.dataset.en;
             localStorage.setItem('html_editor_quickbar_visible', !hidden);
             setTimeout(updateLineNumbers, 0);
         }
@@ -1069,7 +1094,10 @@
             const container = document.querySelector('.editor-container');
             container.classList.toggle('no-bg');
             const isHidden = container.classList.contains('no-bg');
-            document.getElementById('bgToggleText').textContent = isHidden ? "BG [OFF]" : "BG [ON]";
+            const el = document.getElementById('bgToggleText');
+            el.dataset.cn = isHidden ? "背景 [关]" : "背景 [开]";
+            el.dataset.en = isHidden ? "BG [OFF]" : "BG [ON]";
+            el.textContent = currentLang === 'cn' ? el.dataset.cn : el.dataset.en;
             localStorage.setItem('html_editor_bg_visible', !isHidden);
         }
 
@@ -1077,7 +1105,10 @@
             const row = document.getElementById('githubRow');
             row.classList.toggle('hidden');
             const isHidden = row.classList.contains('hidden');
-            document.getElementById('ghRowToggleText').textContent = isHidden ? "GitHub [OFF]" : "GitHub [ON]";
+            const el = document.getElementById('ghRowToggleText');
+            el.dataset.cn = isHidden ? "GitHub [关]" : "GitHub [开]";
+            el.dataset.en = isHidden ? "GitHub [OFF]" : "GitHub [ON]";
+            el.textContent = currentLang === 'cn' ? el.dataset.cn : el.dataset.en;
             localStorage.setItem('html_editor_ghrow_visible', !isHidden);
         }
 
@@ -1116,7 +1147,7 @@
                 btn.style.backgroundColor = t.bg;
                 btn.style.color = t.text;
                 btn.style.border = `1px solid ${t.border || '#374151'}`;
-                btn.innerHTML = `<span>${t.name}</span><div class="w-3 h-3 rounded-full" style="background:${t.accent}"></div>`;
+                btn.innerHTML = `<span>${currentLang === 'cn' ? t.nameCn : t.name}</span><div class="w-3 h-3 rounded-full" style="background:${t.accent}"></div>`;
                 btn.onclick = () => { applyTheme(idx); themePanel.classList.add('hidden'); };
                 themeList.appendChild(btn);
             });
@@ -1338,6 +1369,12 @@
         }
 
         // --- GitHub Helper Logic ---
+        function showGhHelp() {
+            const help = currentLang === 'cn' ? 
+                '📡刷新: 获取仓库列表\n🔘拉取: 加载线上文件到编辑器代码区\n🔄同步: 将当前代码区代码覆盖到仓库index.html\n🌐网页: 打开在线预览html页面\n📂仓库: 前往GitHub该仓库管理页面\n📥下载: 下载所选仓库的index.html文件到本地\n✏️重命名: 修改该仓库名称\n🗑️删除: 永久移除该仓库' : 
+                '📡Refresh: Fetch repo list\n🔘Pull: Load online file to editor\n🔄Sync: Overwrite repo index.html with current code\n🌐Pages: Open GitHub Pages site\n📂Repo: Visit GitHub repository\n📥Download: Save index.html to local PC\n✏️Rename: Change repository name\n🗑️Delete: Permanently remove this repository';
+            alert(help);
+        }
         async function ghFetch(path, options = {}) {
             const token = document.getElementById('ghToken').value.trim();
             if (!token) throw new Error("Token required");
@@ -1433,8 +1470,9 @@
 
         async function ghCreateRepo() {
             const name = document.getElementById('newRepoName').value.trim();
-            if (!name) return alert("Enter a repo name");
-            if (!confirm(`确定要创建新仓库: ${name} 吗？`)) return;
+            if (!name) return alert(currentLang === 'cn' ? "请输入仓库名" : "Enter a repo name");
+            const msg = currentLang === 'cn' ? `确定要创建新仓库: ${name} 吗？` : `Create new repository: ${name}?`;
+            if (!confirm(msg)) return;
             try {
                 const repo = await ghFetch('/user/repos', {
                     method: 'POST',
@@ -1449,7 +1487,7 @@
 
         async function ghDeleteRepo() {
             const repo = document.getElementById('repoSelect').value;
-            if (!repo || !confirm(`Permanently delete ${repo}?`)) return;
+            if (!repo) return;
             try {
                 await ghFetch(`/repos/${repo}`, { method: 'DELETE' });
                 ghListRepos();
