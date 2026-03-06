@@ -1038,6 +1038,9 @@
                     if (newCode.includes(change.find)) {
                         newCode = newCode.replace(change.find, change.replace);
                         successCount++;
+                    } else if (newCode.trim() === "") {
+                        newCode = change.replace;
+                        successCount++;
                     } else {
                         console.warn("未找到代码块:", change.find);
                     }
