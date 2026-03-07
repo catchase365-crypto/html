@@ -1442,7 +1442,11 @@
         function updateRepoLink() {
             const select = document.getElementById('repoSelect');
             const opt = select.options[select.selectedIndex];
-            document.getElementById('ghRepoLinkBtn').dataset.url = opt.dataset.url || "#";
+            if (opt) {
+                document.getElementById('ghRepoLinkBtn').dataset.url = opt.dataset.url || "#";
+            } else {
+                document.getElementById('ghRepoLinkBtn').dataset.url = "#";
+            }
         }
 
         function ghOpenRepo() {
@@ -1554,14 +1558,42 @@
             const msg = currentLang === 'cn' ? `确定要创建新仓库: ${name} 吗？` : `Create new repository: ${name}?`;
             if (!confirm(msg)) return;
             try {
-                const repo = await ghFetch('/user/repos', {
+                // 1. 创建仓库
+                const repoData = await ghFetch('/user/repos', {
                     method: 'POST',
                     body: JSON.stringify({ name, auto_init: true })
                 });
+                const fullName = repoData.full_name;
+
+                // 等待 GitHub 初始化分支
+                await new Promise(r => setTimeout(r, 2000));
+
+                // 2. 初始同步 index.html
+                await ghFetch(`/repos/${fullName}/contents/index.html`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        message: "Initial deployment via HTML Editor AI",
+                        content: btoa(unescape(encodeURIComponent(codeArea.value)))
+                    })
+                });
+
+                // 3. 开启 Pages 托管
+                try {
+                    await ghFetch(`/repos/${fullName}/pages`, {
+                        method: 'POST',
+                        body: JSON.stringify({ source: { branch: 'main', path: '/' } }),
+                        headers: { 'Accept': 'application/vnd.github.switcheroo-preview+json' }
+                    });
+                } catch (pageErr) { console.warn("Pages activation info:", pageErr); }
+
+                // 4. 刷新列表与 UI
                 await ghListRepos();
-                document.getElementById('repoSelect').value = repo.full_name;
-                alert("Repo created! 🚀 Syncing index.html...");
-                ghUpdateRepo();
+                document.getElementById('repoSelect').value = fullName;
+                updateRepoLink();
+                
+                alert(currentLang === 'cn' ? 
+                    "🚀 新仓库已创建并自动开启 Pages 托管！请等待 1 分钟左右部署完成，即可点击 🌐 访问。" : 
+                    "🚀 New repo created and Pages enabled! Wait ~1 min for deployment, then click 🌐 to visit.");
             } catch (e) { alert("Create Error: " + e.message); }
         }
 
