@@ -1432,7 +1432,8 @@
 
         async function ghListRepos() {
             try {
-                const repos = await ghFetch('/user/repos?per_page=100&sort=updated');
+                // 增加随机时间戳参数 t 绕过 GitHub API 或浏览器的潜在缓存，确保数据实时性
+                const repos = await ghFetch(`/user/repos?per_page=100&sort=updated&t=${Date.now()}`);
                 const select = document.getElementById('repoSelect');
                 select.innerHTML = '<option value="">Repos...</option>' + 
                     repos.map(r => `<option value="${r.full_name}" data-url="${r.html_url}">${r.name}</option>`).join('');
