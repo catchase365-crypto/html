@@ -1625,9 +1625,9 @@ if("service-worker" in navigator) navigator.serviceWorker.register("sw.js");
             
             modal.innerHTML = `
                 <div class="flex justify-between items-center pb-2 border-b border-[var(--border)]">
-                    <h3 class="font-bold text-[var(--accent)] text-sm">${isCn ? '操作日志' : 'Action Logs'}</h3>
+                    <h3 class="font-bold text-[var(--accent)] text-sm" data-cn="操作日志" data-en="Action Logs">${isCn ? '操作日志' : 'Action Logs'}</h3>
                     <div class="flex gap-2">
-                        <button onclick="localStorage.removeItem('editor_logs');this.closest('#logPanel').remove();showLogModal()" class="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">${isCn ? '清除' : 'Clear'}</button>
+                        <button onclick="localStorage.removeItem('editor_logs');this.closest('#logPanel').remove();showLogModal()" class="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded" data-cn="清除" data-en="Clear">${isCn ? '清除' : 'Clear'}</button>
                         <button onclick="this.closest('#logPanel').classList.add('hidden')" class="text-[var(--text-dim)]">✕</button>
                     </div>
                 </div>
@@ -1636,7 +1636,7 @@ if("service-worker" in navigator) navigator.serviceWorker.register("sw.js");
                         <details class="border border-[var(--border)] rounded p-2 bg-[var(--bg-main)]">
                             <summary class="cursor-pointer text-[var(--text-main)] truncate">[${l.time}] ${l.msg}</summary>
                             <pre class="mt-1 p-1 bg-black/30 rounded overflow-x-auto text-[var(--accent)]">${JSON.stringify(l.details, null, 2) || 'No details'}</pre>
-                        </details>`).join('') || (isCn ? '无日志' : 'No logs')}
+                        </details>`).join('') || `<span data-cn="无日志" data-en="No logs">${isCn ? '无日志' : 'No logs'}</span>`}
                 </div>
             `;
             document.body.appendChild(modal);
