@@ -189,7 +189,6 @@
 <link rel="manifest" href="manifest.json">
 <script>
 if("service-worker" in navigator) navigator.serviceWorker.register("sw.js");
-window.addEventListener("click", function(){ var d=document.documentElement; (d.requestFullscreen||d.webkitRequestFullScreen).call(d); }, {once:true});
 </script>
 </head>
 <body class="flex flex-col h-[100dvh]">
@@ -746,6 +745,7 @@ window.addEventListener("click", function(){ var d=document.documentElement; (d.
         </div>
         <div class="w-[1px] h-6 bg-[var(--border)] shrink-0"></div>
         <div class="flex items-center gap-1 flex-grow min-w-0">
+            <button onclick="showLogModal()" class="icon-btn p-1.5 text-xs" title="View Logs">📜</button>
             <input type="text" id="newRepoName" data-placeholder-cn="新仓库名..." data-placeholder-en="New Repo..." placeholder="New Repo..." class="bg-[var(--bg-main)] text-[var(--text-main)] text-[10px] p-1.5 rounded border border-[var(--border)] flex-grow min-w-[60px] outline-none">
             <button onclick="ghCreateRepo()" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-1.5 rounded transition-colors whitespace-nowrap" data-cn="🚀 创建" data-en="🚀 Create">🚀 创建</button>
         </div>
@@ -1063,7 +1063,7 @@ window.addEventListener("click", function(){ var d=document.documentElement; (d.
                     updateLineNumbers();
                     localStorage.setItem('html_editor_ult_content', newCode);
                     aiStatus.textContent = `Done: ${successCount} changes! ✅`;
-                    aiStatus.className = "text-xs text-green-400";
+                    aiStatus.className = "text-xs text-green-400"; addLog(`AI Success: ${successCount} changes`, changes);
                     aiPromptInput.value = ''; 
                 } else {
                     aiStatus.textContent = "No changes matched. Be more specific. ❌";
@@ -1479,7 +1479,7 @@ window.addEventListener("click", function(){ var d=document.documentElement; (d.
                         sha: sha
                     })
                 });
-                alert("index.html synced successfully! 🌐");
+                alert("index.html synced successfully! 🌐"); addLog(`Synced: ${repo}`);
             } catch (e) { alert("Sync Error: " + e.message); }
         }
 
@@ -1595,6 +1595,7 @@ window.addEventListener("click", function(){ var d=document.documentElement; (d.
 
                 // 4. 刷新列表与 UI
                 await ghListRepos();
+                addLog(`Created Repo: ${name}`);
                 document.getElementById('repoSelect').value = fullName;
                 updateRepoLink();
                 
@@ -1602,6 +1603,43 @@ window.addEventListener("click", function(){ var d=document.documentElement; (d.
                     "🚀 新仓库已创建并自动开启 Pages 托管！请等待 1 分钟左右部署完成，即可点击 🌐 访问。" : 
                     "🚀 New repo created and Pages enabled! Wait ~1 min for deployment, then click 🌐 to visit.");
             } catch (e) { alert("Create Error: " + e.message); }
+        }
+
+        function addLog(msg, details = null) {
+            let logs = JSON.parse(localStorage.getItem('editor_logs') || '[]');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.unshift({ time: timestamp, msg, details });
+            if(logs.length > 50) logs.pop();
+            localStorage.setItem('editor_logs', JSON.stringify(logs));
+        }
+
+        function showLogModal() {
+            let modal = document.getElementById('logPanel');
+            if (modal) { modal.classList.toggle('hidden'); return; }
+            
+            modal = document.createElement('div');
+            modal.id = 'logPanel';
+            modal.className = 'absolute top-14 left-2 z-50 bg-[var(--bg-ui)] border border-[var(--border)] p-3 rounded-xl shadow-2xl w-[90%] max-w-[400px] max-h-[60vh] flex flex-col gap-3';
+            const isCn = currentLang === 'cn';
+            const logs = JSON.parse(localStorage.getItem('editor_logs') || '[]');
+            
+            modal.innerHTML = `
+                <div class="flex justify-between items-center pb-2 border-b border-[var(--border)]">
+                    <h3 class="font-bold text-[var(--accent)] text-sm">${isCn ? '操作日志' : 'Action Logs'}</h3>
+                    <div class="flex gap-2">
+                        <button onclick="localStorage.removeItem('editor_logs');this.closest('#logPanel').remove();showLogModal()" class="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">${isCn ? '清除' : 'Clear'}</button>
+                        <button onclick="this.closest('#logPanel').classList.add('hidden')" class="text-[var(--text-dim)]">✕</button>
+                    </div>
+                </div>
+                <div class="flex-grow overflow-y-auto text-[10px] font-mono flex flex-col gap-2">
+                    ${logs.map(l => `
+                        <details class="border border-[var(--border)] rounded p-2 bg-[var(--bg-main)]">
+                            <summary class="cursor-pointer text-[var(--text-main)] truncate">[${l.time}] ${l.msg}</summary>
+                            <pre class="mt-1 p-1 bg-black/30 rounded overflow-x-auto text-[var(--accent)]">${JSON.stringify(l.details, null, 2) || 'No details'}</pre>
+                        </details>`).join('') || (isCn ? '无日志' : 'No logs')}
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         async function ghDeleteRepo() {
